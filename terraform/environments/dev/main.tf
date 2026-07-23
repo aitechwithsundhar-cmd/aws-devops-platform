@@ -62,3 +62,16 @@ module "backend_alb" {
     module.databases
   ]
 }
+
+module "acm" {
+  source = "../../modules/acm"
+
+  project     = var.project
+  environment = var.environment
+  zone_id     = var.zone_id
+  domain_name = var.domain_name
+
+  depends_on = [
+    module.backend_alb
+  ]
+}
