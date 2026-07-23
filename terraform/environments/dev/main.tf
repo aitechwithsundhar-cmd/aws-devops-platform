@@ -36,3 +36,29 @@ module "bastion" {
     module.security_group_rules
   ]
 }
+
+module "databases" {
+  source = "../../modules/databases"
+
+  project     = var.project
+  environment = var.environment
+  zone_id     = var.zone_id
+  domain_name = var.domain_name
+
+  depends_on = [
+    module.bastion
+  ]
+}
+
+module "backend_alb" {
+  source = "../../modules/backend-alb"
+
+  project     = var.project
+  environment = var.environment
+  zone_id     = var.zone_id
+  domain_name = var.domain_name
+
+  depends_on = [
+    module.databases
+  ]
+}
