@@ -25,3 +25,14 @@ module "security_group_rules" {
     module.security_group
   ]
 }
+
+module "bastion" {
+  source = "../../modules/bastion"
+
+  project     = var.project
+  environment = var.environment
+
+  depends_on = [
+    module.security_group_rules
+  ]
+}
