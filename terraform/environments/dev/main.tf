@@ -75,3 +75,15 @@ module "acm" {
     module.backend_alb
   ]
 }
+module "frontend_alb" {
+  source = "../../modules/frontend-alb"
+
+  project     = var.project
+  environment = var.environment
+  zone_id     = var.zone_id
+  domain_name = var.domain_name
+
+  depends_on = [
+    module.acm
+  ]
+}
