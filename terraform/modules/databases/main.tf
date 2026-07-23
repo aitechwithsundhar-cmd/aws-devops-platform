@@ -1,3 +1,7 @@
+########################################
+# MongoDB
+########################################
+
 resource "aws_instance" "mongodb" {
   ami                    = local.ami_id
   instance_type          = "t3.micro"
@@ -12,28 +16,35 @@ resource "aws_instance" "mongodb" {
     local.common_tags
   )
 }
-resource "terraform_data" "mongodb" {
+
+resource "terraform_data" "bootstrap_mongodb" {
   triggers_replace = [
     aws_instance.mongodb.id
   ]
+
   connection {
     type     = "ssh"
     user     = "ec2-user"
     password = "DevOps321"
     host     = aws_instance.mongodb.private_ip
   }
+
   provisioner "file" {
-    source      = "bootstrap.sh"
+    source      = "${path.module}/bootstrap.sh"
     destination = "/tmp/bootstrap-host.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/bootstrap-host.sh",
-      "sudo sh /tmp/bootstrap-host.sh mongodb"
+      "sudo sh /tmp/bootstrap-host.sh mongodb ${var.environment}"
     ]
   }
 }
+
+########################################
+# Redis
+########################################
 
 resource "aws_instance" "redis" {
   ami                    = local.ami_id
@@ -49,29 +60,35 @@ resource "aws_instance" "redis" {
     local.common_tags
   )
 }
+
 resource "terraform_data" "bootstrap_redis" {
   triggers_replace = [
     aws_instance.redis.id
   ]
+
   connection {
     type     = "ssh"
     user     = "ec2-user"
     password = "DevOps321"
     host     = aws_instance.redis.private_ip
   }
+
   provisioner "file" {
-    source      = "bootstrap.sh"
+    source      = "${path.module}/bootstrap.sh"
     destination = "/tmp/bootstrap-host.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/bootstrap-host.sh",
-      "sudo sh /tmp/bootstrap-host.sh redis"
+      "sudo sh /tmp/bootstrap-host.sh redis ${var.environment}"
     ]
   }
 }
 
+########################################
+# MySQL
+########################################
 
 resource "aws_instance" "mysql" {
   ami                    = local.ami_id
@@ -88,18 +105,21 @@ resource "aws_instance" "mysql" {
     local.common_tags
   )
 }
+
 resource "terraform_data" "bootstrap_mysql" {
   triggers_replace = [
     aws_instance.mysql.id
   ]
+
   connection {
     type     = "ssh"
     user     = "ec2-user"
     password = "DevOps321"
     host     = aws_instance.mysql.private_ip
   }
+
   provisioner "file" {
-    source      = "bootstrap.sh"
+    source      = "${path.module}/bootstrap.sh"
     destination = "/tmp/bootstrap-host.sh"
   }
 
@@ -110,6 +130,11 @@ resource "terraform_data" "bootstrap_mysql" {
     ]
   }
 }
+
+########################################
+# RabbitMQ
+########################################
+
 resource "aws_instance" "rabbitmq" {
   ami                    = local.ami_id
   instance_type          = "t3.micro"
@@ -124,18 +149,21 @@ resource "aws_instance" "rabbitmq" {
     local.common_tags
   )
 }
-resource "terraform_data" "rabbitmq" {
+
+resource "terraform_data" "bootstrap_rabbitmq" {
   triggers_replace = [
     aws_instance.rabbitmq.id
   ]
+
   connection {
     type     = "ssh"
     user     = "ec2-user"
     password = "DevOps321"
     host     = aws_instance.rabbitmq.private_ip
   }
+
   provisioner "file" {
-    source      = "bootstrap.sh"
+    source      = "${path.module}/bootstrap.sh"
     destination = "/tmp/bootstrap-host.sh"
   }
 
